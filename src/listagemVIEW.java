@@ -1,12 +1,12 @@
 
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author Adm
@@ -20,6 +20,7 @@ public class listagemVIEW extends javax.swing.JFrame {
         initComponents();
         listarProdutosNaTabela();
     }
+
     private void listarProdutosNaTabela() {
         ProdutosDAO dao = new ProdutosDAO();
         ArrayList<ProdutosDTO> lista = dao.listarProdutos();
@@ -153,11 +154,29 @@ public class listagemVIEW extends javax.swing.JFrame {
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
         String id = id_produto_venda.getText();
-        
-        ProdutosDAO produtosdao = new ProdutosDAO();
-        
-        //produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+
+        if (id.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, informe o ID do produto");
+            return;
+        }
+       
+        if (!id.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, "ID inválido. Digite apenas números.");
+            return;
+        }
+        try {
+            
+            ProdutosDAO produtosdao = new ProdutosDAO();
+            produtosdao.venderProduto(Integer.parseInt(id));
+            JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+            
+            listarProdutosNaTabela();
+            //Limpa o campo do ID 
+            id_produto_venda.setText("");
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "ID inválido. Por favor, insira um número válido.");
+        }
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
@@ -217,16 +236,16 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
 
-    private void listarProdutos(){
+    private void listarProdutos() {
         try {
             ProdutosDAO produtosdao = new ProdutosDAO();
-            
+
             DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
             model.setNumRows(0);
-            
+
             ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
-            
-            for(int i = 0; i < listagem.size(); i++){
+
+            for (int i = 0; i < listagem.size(); i++) {
                 model.addRow(new Object[]{
                     listagem.get(i).getId(),
                     listagem.get(i).getNome(),
@@ -236,6 +255,6 @@ public class listagemVIEW extends javax.swing.JFrame {
             }
         } catch (Exception e) {
         }
-    
+
     }
 }
